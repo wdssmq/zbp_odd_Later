@@ -5,6 +5,7 @@ class odd_Later_BiliHTTP
   public $cache;
   public $pn;
   public $url;
+  public $debug = false;
   protected $info;
   public function __construct($info)
   {
@@ -25,6 +26,7 @@ class odd_Later_BiliHTTP
         break;
     }
   }
+  // 按分布遍历抓取
   public function LoadJSON($pn = 1)
   {
     $this->pn = $pn;
@@ -42,6 +44,7 @@ class odd_Later_BiliHTTP
       return $this->arrayRlt;
     }
   }
+  // 按规则只提取一部分结果
   public function LoadList($list)
   {
     $whiteList = array(
@@ -57,9 +60,12 @@ class odd_Later_BiliHTTP
     foreach ($list as $key => $item) {
       $hash = $item->aid;
       $modRlt = ($nDays + $hash) % 593 + 1;
-      $arrCheck = array_flip(array(13, 37, 73, 137, 313, 433, 577));
-      // $arrCheck = array_flip(array(13, 73, 313, 433));
-      if (!array_key_exists($modRlt, $arrCheck)) {
+      // $arrCheck = array_flip(array(13, 37, 73, 137, 313, 433, 577));
+      // // $arrCheck = array_flip(array(13, 73, 313, 433));
+      // if (!array_key_exists($modRlt, $arrCheck)) {
+      //   continue;
+      // }
+      if ($modRlt !== 137 && !$this->debug) {
         continue;
       }
       $rlt[$key] = array_intersect_key((array) $item, $whiteList);

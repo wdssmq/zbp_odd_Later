@@ -1,7 +1,4 @@
 <?php
-require __DIR__ . "/class/json.php";
-require __DIR__ . "/class/http.php";
-require __DIR__ . "/class/base.php";
 #注册插件
 RegisterPlugin("odd_Later", "ActivePlugin_odd_Later");
 function ActivePlugin_odd_Later()
@@ -15,25 +12,25 @@ function odd_Later_Feed()
   if (GetVars("oddLater", "GET") === null) {
     return;
   }
+  require __DIR__ . "/class/json.php";
+  require __DIR__ . "/class/http.php";
+  require __DIR__ . "/class/base.php";
   $info = odd_Later_ReadJSON();
   $objBili = new odd_Later_BiliHTTP($info);
+  // $objBili->debug = true;
   $items = $objBili->LoadJSON();
 
   $GLOBALS['hooks']['Filter_Plugin_ViewFeed_Begin']['odd_Later_Feed'] = PLUGIN_EXITSIGNAL_RETURN;
   $rss2 = new Rss2("[稍后查看][{$info["site"]}]" . $zbp->name, $zbp->host, $zbp->subname);
   $time = strtotime("today");
   shuffle($items);
-  $i = 0;
   foreach ($items as $item) {
-    if ($i == 4) {
-      break;
-    }
-    $i++;
     $item = (object) $item;
     $Title = "[{$info["name"]}]{$item->title}";
     $URL = "{$item->url}";
-    $Content = "<img src=\"{$item->pic}\">";
-    // $Content .= "{$item->jsonUrl}";
+    $Content = "<p><img src=\"{$item->pic}\" rel=\"noreferrer\" /></p>";
+    $Content .= "<p>Mod：{$item->mod}</p>";
+    // $Content .= join("<br>", (array)$item);
     // $Time = $item->created;
     $Time = $time;
     $rss2->addItem($Title, $URL, $Content, $Time);
