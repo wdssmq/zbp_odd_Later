@@ -24,3 +24,11 @@ function odd_Later_ReadJSONList()
   $objJSON = new odd_Later_json("bili", $dirs);
   return $objJSON->GerFormat();
 }
+function odd_Later_ClearCache()
+{
+  $dir = odd_Later_Path("cache");
+  $files = GetFilesInDir($dir, "txt|json");
+  foreach ($files as $name => $file) {
+    unlink($file);
+  }
+}

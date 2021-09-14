@@ -38,7 +38,12 @@ if ($act == 'save') {
   }
   Redirect('./main.php' . ($suc == null ? '' : '?act=$suc'));
 }
-
+if ($act == 'clear') {
+  CheckIsRefererValid();
+  odd_Later_ClearCache();
+  $zbp->SetHint('good');
+  Redirect('./main.php' . ($suc == null ? '' : '?act=$suc'));
+}
 $t = intval(137 * 24 * 3600) + time();
 $url = "{$zbp->host}feed.php?oddLater";
 InstallPlugin_odd_Later();
@@ -47,9 +52,10 @@ require $blogpath . 'zb_system/admin/admin_header.php';
 require $blogpath . 'zb_system/admin/admin_top.php';
 ?>
 <div id="divMain">
-  <div class="divHeader"><?php echo $blogtitle; ?> <small><a href="main.php" title="刷新">刷新</a></small></div>
+  <div class="divHeader"><?php echo $blogtitle; ?> </div>
   <div class="SubMenu">
     <a href="main.php" title="首页"><span class="m-left m-now">首页</span></a>
+    <a href="<?php echo BuildSafeURL("main.php?act=clear"); ?>" title="删除缓存" onclick="return window.confirm('点击「确定」以继续，或者「取消」。')"><span class="m-right">删除缓存</span></a>
     <?php require_once "about.php"; ?>
   </div>
   <style>
