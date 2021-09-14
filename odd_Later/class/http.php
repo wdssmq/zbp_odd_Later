@@ -71,7 +71,7 @@ class odd_Later_BiliHTTP
     $nDays = floor(time() / 86400) - 14;
     $modCycle = $nDays % $this->cycle;
     if ($this->debug) {
-      $this->Log("\n");
+      $this->Log();
       $this->Log("{$nDays} % {$this->cycle} = {$modCycle}");
     }
     if ($modCycle > 0) {
@@ -114,7 +114,7 @@ class odd_Later_BiliHTTP
       $this->Log("网址：{$this->url}");
     }
   }
-  public function Log($str)
+  public function Log($str = "")
   {
     file_put_contents($this->log, $str . "\n", FILE_APPEND);
   }

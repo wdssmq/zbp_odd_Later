@@ -17,13 +17,12 @@ function odd_Later_Feed()
   require __DIR__ . "/class/base.php";
   $info = odd_Later_ReadJSON();
   $objBili = new odd_Later_BiliHTTP($info);
-  // $objBili->debug = true;
+  $objBili->debug = (bool)$zbp->Config('odd_Later')->debug;
   $items = $objBili->LoadJSON();
 
   $GLOBALS['hooks']['Filter_Plugin_ViewFeed_Begin']['odd_Later_Feed'] = PLUGIN_EXITSIGNAL_RETURN;
   $rss2 = new Rss2("[稍后查看][{$info["site"]}]" . $zbp->name, $zbp->host, $zbp->subname);
   $time = strtotime("today");
-  shuffle($items);
   foreach ($items as $item) {
     $item = (object) $item;
     $Title = "[{$info["name"]}]{$item->title}";

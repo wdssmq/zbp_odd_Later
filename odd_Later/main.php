@@ -30,11 +30,16 @@ if ($act == 'save') {
       $cKey = substr($key, 4 - strlen($key));
       $delItem[$cKey] = $cVal;
     }
+    if (substr($key, 0, 4) === "cfg-" && $cVal !== "") {
+      $cKey = substr($key, 4 - strlen($key));
+      $zbp->Config('odd_Later')->$cKey = $cVal;
+    }
   }
-  if (odd_Later_AddItem($addItem)) {
-    $zbp->SetHint('good');
-  } else {
+  $zbp->SaveConfig('odd_Later');
+  if (count($addItem) > 2 && !odd_Later_AddItem($addItem)) {
     $zbp->SetHint('tips', "输入不符合");
+  } else {
+    $zbp->SetHint('good');
   }
   Redirect('./main.php' . ($suc == null ? '' : '?act=$suc'));
 }
@@ -75,9 +80,9 @@ require $blogpath . 'zb_system/admin/admin_top.php';
         <tr>
           <td>添加/修改</td>
           <td>
-            <p>UID:<?php echo zbpform::text("add-uid", "", "90%"); ?></p>
-            <p>Name:<?php echo zbpform::text("add-name", "", "90%"); ?></p>
-            <p>Type:<?php echo zbpform::text("add-type", "up", "90%"); ?></p>
+            <p>UID <?php echo zbpform::text("add-uid", "", "90%"); ?></p>
+            <p>Name <?php echo zbpform::text("add-name", "", "90%"); ?></p>
+            <p>Type <?php echo zbpform::text("add-type", "up", "90%"); ?></p>
             <p>所有项目必填</p>
           </td>
           <td><input type="submit" value="提交" /></td>
@@ -85,13 +90,18 @@ require $blogpath . 'zb_system/admin/admin_top.php';
         <tr>
           <td>删除</td>
           <td>
-            <p>UID:<?php echo zbpform::text("del-uid", "", "90%"); ?></p>
+            <p>UID <?php echo zbpform::text("del-uid", "", "90%"); ?></p>
           </td>
           <td><input type="submit" value="提交" /></td>
         </tr>
         <tr>
           <td>列表</td>
           <td colspan="2" class="ul-style"><?php echo odd_Later_ReadJSONList(); ?></td>
+        </tr>
+        <tr>
+          <td>调试模式</td>
+          <td><?php zbpform::zbradio("cfg-debug", $zbp->Config("odd_Later")->debug); ?></td>
+          <td><input type="submit" value="提交" /></td>
         </tr>
       </table>
     </form>
