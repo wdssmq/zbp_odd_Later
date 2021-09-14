@@ -1,17 +1,28 @@
 <?php
 class odd_Later_BiliHTTP
 {
+  // 抓取结果
   public $arrayRlt = array();
+  // 缓存目录
   public $cache;
+  // 日志文件
+  public $log;
+  // 分页
   public $pn;
+  // 远程地址
   public $url;
+  // 调试开关
   public $debug = false;
+  // JSON 载入信息
   protected $info;
+  // 初始
   public function __construct($info)
   {
     $this->info = $info;
-    $this->cache = $info["cache"];
+    $this->cache = $info['dirs']["cache"];
+    $this->log = $info['dirs']["log"];
   }
+  // 读取 $info 中的字段
   public function __get($name)
   {
     switch ($name) {
@@ -25,8 +36,9 @@ class odd_Later_BiliHTTP
         }
         break;
     }
+    return null;
   }
-  // 按分布遍历抓取
+  // 按分页遍历抓取
   public function LoadJSON($pn = 1)
   {
     $this->pn = $pn;
@@ -35,10 +47,11 @@ class odd_Later_BiliHTTP
     if (empty($objRlt)) {
       return array();
     }
+    $count = $objRlt->data->page->count;
     $objData = $objRlt->data->list->vlist;
     $rlt = $this->LoadList($objData);
     $this->arrayRlt = array_merge($this->arrayRlt, $rlt);
-    if ($objRlt->data->page->count / $objRlt->data->page->ps > $pn) {
+    if ($count / $objRlt->data->page->ps > $pn) {
       return $this->LoadJSON($pn + 1);
     } else {
       return $this->arrayRlt;
@@ -47,32 +60,31 @@ class odd_Later_BiliHTTP
   // 按规则只提取一部分结果
   public function LoadList($list)
   {
-    $whiteList = array(
+    $pickList = array(
       'title' => null,
       'aid' => null,
       'bvid' => null,
       'created' => null,
       'pic' => null
     );
-    // $nDays = floor(time() / 86400);
-    $nDays = floor(time() / 88888);
     $rlt = array();
-    foreach ($list as $key => $item) {
-      $hash = $item->aid;
-      $modRlt = ($nDays + $hash) % 593 + 1;
-      // $arrCheck = array_flip(array(13, 37, 73, 137, 313, 433, 577));
-      // // $arrCheck = array_flip(array(13, 73, 313, 433));
-      // if (!array_key_exists($modRlt, $arrCheck)) {
-      //   continue;
-      // }
-      if ($modRlt !== 137 && !$this->debug) {
-        continue;
-      }
-      $rlt[$key] = array_intersect_key((array) $item, $whiteList);
-      $rlt[$key]["mod"] = $modRlt;
-      $rlt[$key]["jsonUrl"] = $this->url;
-      $rlt[$key]["url"] = "https://www.bilibili.com/video/av{$item->aid}";
+    $nDays = floor(time() / 86400) - 14;
+    $modCycle = $nDays % $this->cycle;
+    if ($this->debug) {
+      $this->Log("\n");
+      $this->Log("{$nDays} % {$this->cycle} = {$modCycle}");
     }
+    if ($modCycle > 0) {
+      return $rlt;
+    }
+    $nMultiple = $nDays / $this->cycle - 10;
+    $curCount = count($list);
+    $modIndex = $nMultiple % $curCount;
+    $pickItem = $list[$modIndex];
+    $rlt[$modIndex] = array_intersect_key((array) $pickItem, $pickList);
+    $rlt[$modIndex]["mod"] = "$modIndex|$curCount";
+    $rlt[$modIndex]["jsonUrl"] = $this->url;
+    $rlt[$modIndex]["url"] = "https://www.bilibili.com/video/av{$pickItem->aid}";
     return $rlt;
   }
   public function GenURL()
@@ -96,16 +108,14 @@ class odd_Later_BiliHTTP
     if ($http->status == 200) {
       file_put_contents($cache, $http->responseText);
       return $http->responseText;
-    } else {
-      // debug
-      // ob_clean();
-      echo __FILE__ . "丨" . __LINE__ . ":<br>\n";
-      var_dump($this->url);
-      echo "<br><br>\n\n";
-      var_dump($http->status);
-      echo "<br><br>\n\n";
-      die();
-      // debug
+    } elseif ($this->debug) {
+      $this->Log("\n");
+      $this->Log("抓取失败：{$http->status}");
+      $this->Log("网址：{$this->url}");
     }
+  }
+  public function Log($str)
+  {
+    file_put_contents($this->log, $str . "\n", FILE_APPEND);
   }
 }

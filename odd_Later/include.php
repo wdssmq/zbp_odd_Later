@@ -29,7 +29,8 @@ function odd_Later_Feed()
     $Title = "[{$info["name"]}]{$item->title}";
     $URL = "{$item->url}";
     $Content = "<p><img src=\"{$item->pic}\" rel=\"noreferrer\" /></p>";
-    $Content .= "<p>Mod：{$item->mod}</p>";
+    $Content .= "<p>Mod: {$item->mod}</p>";
+    $Content .= "<p>Url: {$item->jsonUrl}</p>";
     // $Content .= join("<br>", (array)$item);
     // $Time = $item->created;
     $Time = $time;
@@ -46,6 +47,9 @@ function odd_Later_Path($file, $t = 'path')
   global $zbp;
   $result = $zbp->$t . 'zb_users/plugin/odd_Later/';
   switch ($file) {
+    case 'log':
+      return $result . 'cache/log.txt';
+      break;
     case 'cache':
       return $result . 'cache/';
       break;

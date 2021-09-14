@@ -2,17 +2,15 @@
 
 class odd_Later_json
 {
-  public $dir;
+  public $dirs;
   public $site;
   public $file;
-  public $cache;
   protected $data = array();
   public function __construct($site, $dirs = array())
   {
     $this->site = $site;
-    $this->dir = $dirs["config"];
-    $this->cache =  $dirs["cache"];
-    $this->file = $this->dir . "{$this->site}.json";
+    $this->dirs = $dirs;
+    $this->file = $dirs["config"] . "{$site}.json";
     if (is_file($this->file)) {
       $this->data = json_decode(file_get_contents($this->file), true);
     }
@@ -57,7 +55,7 @@ class odd_Later_json
   public function GetRnd()
   {
     $rndKey = array_rand($this->data);
-    return array_merge($this->data[$rndKey], array("cache" => $this->cache, "site" => $this->site));
+    return array_merge($this->data[$rndKey], array("dirs" => $this->dirs, "site" => $this->site));
   }
   public function GerFormat()
   {
