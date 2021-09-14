@@ -55,7 +55,13 @@ class odd_Later_json
   public function GetRnd()
   {
     $rndKey = array_rand($this->data);
-    return array_merge($this->data[$rndKey], array("dirs" => $this->dirs, "site" => $this->site));
+    $arrPick = $this->data[$rndKey];
+    // 2021-09-14
+    if (!isset($arrPick["cycle"])) {
+      $arrPick["cycle"] = 7;
+    }
+    // 2021-09-14
+    return array_merge($arrPick, array("dirs" => $this->dirs, "site" => $this->site));
   }
   public function GerFormat()
   {
