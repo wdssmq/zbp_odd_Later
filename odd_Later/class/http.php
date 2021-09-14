@@ -26,10 +26,9 @@ class odd_Later_BiliHTTP
   public function __get($name)
   {
     switch ($name) {
-      case 'value':
-        # code...
+      case 'uid':
+        return (int)$this->info['uid'];
         break;
-
       default:
         if (isset($this->info[$name])) {
           return $this->info[$name];
@@ -45,11 +44,21 @@ class odd_Later_BiliHTTP
     $this->GenURL();
     $objRlt = json_decode($this->Http());
     if (empty($objRlt)) {
-      return array();
+      return $this->arrayRlt;
+    }
+    $nDays = floor(time() / 86400) + $this->uid;
+    $modCycle = $nDays % $this->cycle;
+    if ($pn == 1 && $this->debug) {
+      $this->Log();
+      $this->Log("-----");
+      $this->Log("{$nDays} % {$this->cycle} = {$modCycle}");
+    }
+    if ($modCycle > 0) {
+      return $this->arrayRlt;
     }
     $count = $objRlt->data->page->count;
     $objData = $objRlt->data->list->vlist;
-    $rlt = $this->LoadList($objData);
+    $rlt = $this->LoadList($objData, $nDays);
     $this->arrayRlt = array_merge($this->arrayRlt, $rlt);
     if ($count / $objRlt->data->page->ps > $pn) {
       return $this->LoadJSON($pn + 1);
@@ -58,7 +67,7 @@ class odd_Later_BiliHTTP
     }
   }
   // 按规则只提取一部分结果
-  public function LoadList($list)
+  public function LoadList($list, $nDays)
   {
     $pickList = array(
       'title' => null,
@@ -68,18 +77,13 @@ class odd_Later_BiliHTTP
       'pic' => null
     );
     $rlt = array();
-    $nDays = floor(time() / 86400) - 14;
-    $modCycle = $nDays % $this->cycle;
-    if ($this->debug) {
-      $this->Log();
-      $this->Log("{$nDays} % {$this->cycle} = {$modCycle}");
-    }
-    if ($modCycle > 0) {
-      return $rlt;
-    }
-    $nMultiple = $nDays / $this->cycle - 10;
+    $nMultiple = $nDays / $this->cycle;
     $curCount = count($list);
     $modIndex = $nMultiple % $curCount;
+    if ($this->debug) {
+      $this->Log();
+      $this->Log("{$nMultiple} % {$curCount} = {$modIndex}");
+    }
     $pickItem = $list[$modIndex];
     $rlt[$modIndex] = array_intersect_key((array) $pickItem, $pickList);
     $rlt[$modIndex]["mod"] = "$modIndex|$curCount";

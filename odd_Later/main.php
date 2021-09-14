@@ -100,7 +100,7 @@ require $blogpath . 'zb_system/admin/admin_top.php';
         </tr>
         <tr>
           <td>调试模式</td>
-          <td><?php zbpform::zbradio("cfg-debug", $zbp->Config("odd_Later")->debug); ?></td>
+          <td><?php zbpform::zbradio("cfg-debug", $zbp->Config("odd_Later")->debug); ?> <?php echo odd_Later_a(odd_Later_Path("log", "host"), "查看日志", "查看日志"); ?></td>
           <td><input type="submit" value="提交" /></td>
         </tr>
       </table>
@@ -116,12 +116,12 @@ require $blogpath . 'zb_system/admin/admin_top.php';
 </div>
 
 <?php
-function odd_Later_a($href, $title, $text = "")
+function odd_Later_a($href, $title, $text = "", $target = "_blank")
 {
   if (empty($text)) {
     $text = $href;
   }
-  return "<a href=\"{$href}\" title=\"{$title}\">$text</a>";
+  return "<a href=\"{$href}\" title=\"{$title}\" target=\"{$target}\">$text</a>";
 }
 require $blogpath . 'zb_system/admin/admin_footer.php';
 RunTime();
