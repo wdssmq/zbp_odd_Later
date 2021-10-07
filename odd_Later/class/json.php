@@ -5,6 +5,7 @@ class odd_Later_json
   public $dirs;
   public $site;
   public $file;
+  static public $defCycle = 13;
   protected $data = array();
   public function __construct($site, $dirs = array())
   {
@@ -58,7 +59,7 @@ class odd_Later_json
     $arrPick = $this->data[$rndKey];
     // 2021-09-14
     if (!isset($arrPick["cycle"])) {
-      $arrPick["cycle"] = 7;
+      $arrPick["cycle"] = odd_Later_json::$defCycle;
     }
     // 2021-09-14
     return array_merge($arrPick, array("dirs" => $this->dirs, "site" => $this->site));

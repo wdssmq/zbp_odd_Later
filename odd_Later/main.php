@@ -18,7 +18,7 @@ $act = GetVars('act', 'GET');
 $suc = GetVars('suc', 'GET');
 if ($act == 'save') {
   CheckIsRefererValid();
-  $addItem = array("cycle" => 7);
+  $addItem = array("cycle" => odd_Later_json::$defCycle);
   $delItem = array();
   foreach ($_POST as $key => $val) {
     $cVal = trim($val);
