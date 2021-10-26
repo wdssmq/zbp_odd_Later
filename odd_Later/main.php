@@ -32,11 +32,16 @@ if ($act == 'save') {
     }
     if (substr($key, 0, 4) === "cfg-" && $cVal !== "") {
       $cKey = substr($key, 4 - strlen($key));
+      if ($cKey == "debug") {
+        $cVal = $cVal == "1" ? true : false;
+      }
       $zbp->Config('odd_Later')->$cKey = $cVal;
     }
   }
   $zbp->SaveConfig('odd_Later');
-  if (count($addItem) > 2 && !odd_Later_AddItem($addItem)) {
+  if (count($addItem) == 4) {
+    odd_Later_AddItem($addItem);
+  } else if (count($addItem) == 3) {
     $zbp->SetHint('tips', "输入不符合");
   } else {
     $zbp->SetHint('good');
@@ -52,7 +57,7 @@ if ($act == 'clear') {
 $t = intval(137 * 24 * 3600) + time();
 $url = "{$zbp->host}feed.php?oddLater";
 InstallPlugin_odd_Later();
-$blogtitle = '稍后查看';
+$blogtitle = '「奇怪插件」稍后查看';
 require $blogpath . 'zb_system/admin/admin_header.php';
 require $blogpath . 'zb_system/admin/admin_top.php';
 ?>

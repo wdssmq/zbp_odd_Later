@@ -17,7 +17,7 @@ function odd_Later_Feed()
   require __DIR__ . "/class/base.php";
   $info = odd_Later_ReadJSON();
   $objBili = new odd_Later_BiliHTTP($info);
-  $objBili->debug = (bool)$zbp->Config('odd_Later')->debug;
+  $objBili->debug = $zbp->Config('odd_Later')->debug;
   $items = $objBili->LoadJSON();
 
   $GLOBALS['hooks']['Filter_Plugin_ViewFeed_Begin']['odd_Later_Feed'] = PLUGIN_EXITSIGNAL_RETURN;

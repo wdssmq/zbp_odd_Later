@@ -51,7 +51,7 @@ class odd_Later_BiliHTTP
     if ($pn == 1 && $this->debug) {
       $this->Log();
       $this->Log("-----");
-      $this->Log("{$nDays} % {$this->cycle} = {$modCycle}");
+      $this->Log("{$this->uid}: {$nDays} % {$this->cycle} = {$modCycle}");
     }
     if ($modCycle > 0) {
       return $this->arrayRlt;
@@ -82,7 +82,7 @@ class odd_Later_BiliHTTP
     $modIndex = $nMultiple % $curCount;
     if ($this->debug) {
       $this->Log();
-      $this->Log("{$nMultiple} % {$curCount} = {$modIndex}");
+      $this->Log("{$this->uid}: {$nMultiple} % {$curCount} = {$modIndex}");
     }
     $pickItem = $list[$modIndex];
     $rlt[$modIndex] = array_intersect_key((array) $pickItem, $pickList);

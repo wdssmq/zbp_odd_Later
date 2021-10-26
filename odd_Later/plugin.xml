@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin version="php">
 <id>odd_Later</id>
-<name>[奇怪插件]稍后查看</name>
+<name>「奇怪插件」稍后查看</name>
 <url>//jq.qq.com/?_wv=1027&amp;k=555hND5</url>
 <note>又名LaterHub？？？</note>
 <description>置百丈玄冰而崩裂，掷须臾池水而漂摇。</description>
@@ -18,10 +18,10 @@
   <email></email>
   <url></url>
 </source>
-<adapted>151740</adapted>
+<adapted>162210</adapted>
 <version>1.0.3</version>
 <pubdate>2020-06-11</pubdate>
-<modified>2021-09-25</modified>
+<modified>2021-10-26</modified>
 <price>5.93</price>
 <phpver>5.4</phpver>
 <advanced>
