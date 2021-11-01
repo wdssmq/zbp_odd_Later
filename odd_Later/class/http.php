@@ -85,10 +85,11 @@ class odd_Later_BiliHTTP
       $this->Log("{$this->uid}: {$nMultiple} % {$curCount} = {$modIndex}");
     }
     $pickItem = $list[$modIndex];
-    $rlt[$modIndex] = array_intersect_key((array) $pickItem, $pickList);
-    $rlt[$modIndex]["mod"] = "$modIndex|$curCount";
-    $rlt[$modIndex]["jsonUrl"] = $this->url;
-    $rlt[$modIndex]["url"] = "https://www.bilibili.com/video/av{$pickItem->aid}";
+    $aid = $pickItem->aid;
+    $rlt[$aid] = array_intersect_key((array) $pickItem, $pickList);
+    $rlt[$aid]["mod"] = "$modIndex|$curCount";
+    $rlt[$aid]["jsonUrl"] = $this->url;
+    $rlt[$aid]["url"] = "https://www.bilibili.com/video/av{$aid}";
     return $rlt;
   }
   public function GenURL()

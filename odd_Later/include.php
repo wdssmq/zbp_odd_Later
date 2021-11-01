@@ -26,6 +26,7 @@ function odd_Later_Feed()
   foreach ($items as $item) {
     $item = (object) $item;
     $Title = "[{$info["name"]}]{$item->title}";
+    odd_Later_LeanCache($item, $Title);
     $URL = "{$item->url}";
     $Content = "<p><img src=\"{$item->pic}\" rel=\"noreferrer\" /></p>";
     $Content .= "<p>Mod: {$item->mod}</p>";
@@ -70,6 +71,22 @@ function odd_Later_Path($file, $t = 'path')
     default:
       return $result . $file;
   }
+}
+function odd_Later_LeanCache($item, &$title)
+{
+  global $zbp;
+  $flag = "";
+  if (!$zbp->CheckPlugin('mz_LeanCloud')) {
+    return $flag;
+  }
+  mz_LeanCloud_InitClient("bilibili");
+  if (mz_LeanCloud::exist(array("bvid", $item->bvid))) {
+    $flag = "exist";
+    $title = "「已查看」{$title}";
+  } else {
+    mz_LeanCloud::create($item);
+  }
+  return $flag;
 }
 function InstallPlugin_odd_Later()
 {
