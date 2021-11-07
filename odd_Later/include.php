@@ -29,7 +29,6 @@ function odd_Later_Feed()
     odd_Later_LeanCache($item, $Title);
     $URL = "{$item->url}";
     $Content = "<p><img src=\"{$item->pic}\" rel=\"noreferrer\" /></p>";
-    $Content .= "<p>Mod: {$item->mod}</p>";
     $Content .= "<p>Url: {$item->jsonUrl}</p>";
     // $Content .= join("<br>", (array)$item);
     // $Time = $item->created;
