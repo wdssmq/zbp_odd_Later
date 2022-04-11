@@ -40,20 +40,25 @@ class odd_Later_BiliHTTP
   // 按分页遍历抓取
   public function LoadJSON($pn = 1)
   {
+    // 生成请求链接
     $this->pn = $pn;
     $this->GenURL();
-    $objRlt = $this->Http();
-    if (empty($objRlt)) {
-      return $this->arrayRlt;
-    }
+    // 对于每个 uid，每隔 cycle 天抓取一次
     $nDays = floor(time() / 86400) + $this->uid;
+    $nDays = $nDays + 1;
     $modCycle = $nDays % $this->cycle;
     if ($pn == 1 && $this->debug) {
       $this->Log();
       $this->Log("-----");
+      $this->Log($this->url);
       $this->Log("{$this->uid}: {$nDays} % {$this->cycle} = {$modCycle}");
     }
     if ($modCycle > 0) {
+      return $this->arrayRlt;
+    }
+    // 抓取内容
+    $objRlt = $this->Http();
+    if (empty($objRlt)) {
       return $this->arrayRlt;
     }
     $count = $objRlt->data->page->count;
