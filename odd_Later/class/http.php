@@ -42,7 +42,7 @@ class odd_Later_BiliHTTP
   {
     $this->pn = $pn;
     $this->GenURL();
-    $objRlt = json_decode($this->Http());
+    $objRlt = $this->Http();
     if (empty($objRlt)) {
       return $this->arrayRlt;
     }
@@ -97,27 +97,28 @@ class odd_Later_BiliHTTP
     $uid = $this->uid;
     $pn = $this->pn;
     if ($this->type == "up") {
-      $this->url = "https://api.bilibili.com/x/space/arc/search?mid={$uid}&ps=100&pn={$pn}";
+      $this->url = "https://api.bilibili.com/x/space/arc/search?mid={$uid}&ps=50&pn={$pn}";
     }
   }
   public function Http()
   {
     $cache = "{$this->cache}{$this->type}-{$this->uid}-{$this->pn}.json";
     if (is_file($cache)) {
-      return file_get_contents($cache);
+      return json_decode(file_get_contents($cache));
     }
     $http = Network::Create();
     $http->open('GET', $this->url);
     $http->send();
-
-    if ($http->status == 200) {
+    $data = json_decode($http->responseText);
+    if ($http->status == 200 && $data->code == 0) {
       file_put_contents($cache, $http->responseText);
-      return $http->responseText;
+      return $data;
     } elseif ($this->debug) {
       $this->Log("\n");
       $this->Log("抓取失败：{$http->status}");
       $this->Log("网址：{$this->url}");
     }
+    return null;
   }
   public function Log($str = "")
   {
