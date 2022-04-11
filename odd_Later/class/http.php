@@ -45,7 +45,7 @@ class odd_Later_BiliHTTP
     $this->GenURL();
     // 对于每个 uid，每隔 cycle 天抓取一次
     $nDays = floor(time() / 86400) + $this->uid;
-    $nDays = $nDays + 1;
+    // $nDays = $nDays + 1;
     $modCycle = $nDays % $this->cycle;
     if ($pn == 1 && $this->debug) {
       $this->Log();
