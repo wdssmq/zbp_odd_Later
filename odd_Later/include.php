@@ -85,6 +85,13 @@ function odd_Later_LeanCache($item, &$title)
   } else {
     mz_LeanCloud::create($item);
   }
+  $errInfo = mz_LeanCloud::GetErrorInfo();
+  if ($errInfo->code > 0) {
+    $title = "「{$errInfo->msg}」{$title}";
+  }
+  if ($errInfo->code > 0 && $zbp->Config('odd_Later')->debug) {
+    file_put_contents(odd_Later_Path('log'), $errInfo->msg, FILE_APPEND);
+  }
   return $flag;
 }
 function InstallPlugin_odd_Later()
