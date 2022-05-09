@@ -23,7 +23,7 @@ class odd_Later_BiliHTTP
     $this->log = $info['dirs']["log"];
     // 对于每个 uid，每隔 cycle 天抓取一次
     $nDays = floor(time() / 86400) + $this->uid;
-    $nDays = $nDays - 1;
+    // $nDays = $nDays - 1;
     $this->nDays = $nDays;
   }
   // 读取 $info 中的字段
