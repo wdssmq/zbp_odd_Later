@@ -32,3 +32,27 @@ function odd_Later_ClearCache()
     unlink($file);
   }
 }
+// 获取一组质数
+function odd_Later_PrimeIt($input)
+{
+  $map = array(
+    0 => [7, 13],
+    1 => [11, 17],
+    3 => [23, 37],
+    7 => [59, 73],
+    13 => [107, 137],
+    17 => [151, 181],
+    37 => [379, 409],
+    49 => [503, 593],
+    59 => [643, 709],
+  );
+  $pick = reset($map);
+  foreach ($map as $key => $arr) {
+    if ($input > $key) {
+      $pick = $arr;
+    } else {
+      break;
+    }
+  }
+  return $pick;
+}

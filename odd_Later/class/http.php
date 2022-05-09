@@ -21,6 +21,10 @@ class odd_Later_BiliHTTP
     $this->info = $info;
     $this->cache = $info['dirs']["cache"];
     $this->log = $info['dirs']["log"];
+    // 对于每个 uid，每隔 cycle 天抓取一次
+    $nDays = floor(time() / 86400) + $this->uid;
+    $nDays = $nDays - 1;
+    $this->nDays = $nDays;
   }
   // 读取 $info 中的字段
   public function __get($name)
@@ -43,15 +47,13 @@ class odd_Later_BiliHTTP
     // 生成请求链接
     $this->pn = $pn;
     $this->GenURL();
-    // 对于每个 uid，每隔 cycle 天抓取一次
-    $nDays = floor(time() / 86400) + $this->uid;
-    // $nDays = $nDays + 1;
-    $modCycle = $nDays % $this->cycle;
+    $modCycle = $this->nDays % $this->cycle;
     if ($pn == 1 && $this->debug) {
       $this->Log();
       $this->Log("-----");
+      $this->Log($this->name);
       $this->Log($this->url);
-      $this->Log("{$this->uid}: {$nDays} % {$this->cycle} = {$modCycle}");
+      $this->Log("{$this->uid}: {$this->nDays} % {$this->cycle} = {$modCycle}");
     }
     if ($modCycle > 0) {
       return $this->arrayRlt;
@@ -61,18 +63,22 @@ class odd_Later_BiliHTTP
     if (empty($objRlt)) {
       return $this->arrayRlt;
     }
-    $count = $objRlt->data->page->count;
-    $objData = $objRlt->data->list->vlist;
-    $rlt = $this->LoadList($objData, $nDays);
+    if ($pn == 1) {
+      $this->count = $objRlt->data->page->count;
+      $this->pageCount = ceil($this->count / $objRlt->data->page->ps);
+      $this->arrPrime = odd_Later_PrimeIt($this->pageCount);
+    }
+    $vlist = $objRlt->data->list->vlist;
+    $rlt = $this->LoadList($vlist, $this->nDays, $this->arrPrime);
     $this->arrayRlt = array_merge($this->arrayRlt, $rlt);
-    if ($count / $objRlt->data->page->ps > $pn) {
+    if ($this->pageCount > $pn) {
       return $this->LoadJSON($pn + 1);
     } else {
       return $this->arrayRlt;
     }
   }
   // 按规则只提取一部分结果
-  public function LoadList($list, $nDays)
+  public function LoadList($list, $nDays, $arrPrime)
   {
     $pickList = array(
       'title' => null,
@@ -82,17 +88,22 @@ class odd_Later_BiliHTTP
       'pic' => null
     );
     $rlt = array();
-    $nMultiple = $nDays / $this->cycle;
+    $nMultiple = floor($nDays / $this->cycle);
     foreach ($list as $item) {
       $aid = $item->aid;
-      $mod = ($nMultiple + $aid) % 137;
+      $curHash = $nMultiple + $aid;
+      // $arrMod = [$curHash % $arrPrime[0], $curHash % $arrPrime[1]];
+      $mod = $curHash % ($arrPrime[0] +  $arrPrime[1] + $this->cycle);
       if ($mod == 0) {
         $rlt[$aid] = array_intersect_key((array) $item, $pickList);
         $rlt[$aid]["jsonUrl"] = $this->url;
         $rlt[$aid]["url"] = "https://www.bilibili.com/video/av{$aid}";
+      } else {
+        continue;
       }
       if ($this->debug) {
-        $this->Log("{$this->uid}: ({$nMultiple} + {$aid}) % 137 = {$mod}");
+        $this->Log("{$this->uid}: ({$nMultiple} + {$aid}) % ({$arrPrime[0]} + {$arrPrime[1]} + {$this->cycle}) = {$mod}");
+        $this->Log();
       }
     }
     return $rlt;
