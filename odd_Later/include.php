@@ -78,7 +78,12 @@ function odd_Later_LeanCache($item, &$title)
   if (!$zbp->CheckPlugin('mz_LeanCloud')) {
     return $flag;
   }
-  mz_LeanCloud_InitClient("bilibili");
+  $debug = $zbp->Config('odd_Later')->debug;
+  if ($debug) {
+    mz_LeanCloud_InitClient("bilibili_debug");
+  } else {
+    mz_LeanCloud_InitClient("bilibili");
+  }
   if (mz_LeanCloud::exist(array("bvid", $item->bvid))) {
     $flag = "exist";
     $title = "「已查看」{$title}";

@@ -67,6 +67,7 @@ class odd_Later_BiliHTTP
       $this->count = $objRlt->data->page->count;
       $this->pageCount = ceil($this->count / $objRlt->data->page->ps);
       $this->arrPrime = odd_Later_PrimeIt($this->pageCount);
+      $this->Log("{$this->uid}: count: {$this->count}, pageCount: {$this->pageCount}");
     }
     $vlist = $objRlt->data->list->vlist;
     $rlt = $this->LoadList($vlist, $this->nDays, $this->arrPrime);
@@ -103,7 +104,6 @@ class odd_Later_BiliHTTP
       }
       if ($this->debug) {
         $this->Log("{$this->uid}: ({$nMultiple} + {$aid}) % ({$arrPrime[0]} + {$arrPrime[1]}) = {$mod}");
-        $this->Log();
       }
     }
     return $rlt;
