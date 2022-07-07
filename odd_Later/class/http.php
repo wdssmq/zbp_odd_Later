@@ -93,7 +93,7 @@ class odd_Later_BiliHTTP
       $aid = $item->aid;
       $curHash = $nMultiple + $aid;
       // $arrMod = [$curHash % $arrPrime[0], $curHash % $arrPrime[1]];
-      $mod = $curHash % ($arrPrime[0] +  $arrPrime[1] + $this->cycle);
+      $mod = $curHash % ($arrPrime[0] +  $arrPrime[1]);
       if ($mod == 0) {
         $rlt[$aid] = array_intersect_key((array) $item, $pickList);
         $rlt[$aid]["jsonUrl"] = $this->url;
@@ -102,7 +102,7 @@ class odd_Later_BiliHTTP
         continue;
       }
       if ($this->debug) {
-        $this->Log("{$this->uid}: ({$nMultiple} + {$aid}) % ({$arrPrime[0]} + {$arrPrime[1]} + {$this->cycle}) = {$mod}");
+        $this->Log("{$this->uid}: ({$nMultiple} + {$aid}) % ({$arrPrime[0]} + {$arrPrime[1]}) = {$mod}");
         $this->Log();
       }
     }

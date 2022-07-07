@@ -46,13 +46,14 @@ function odd_Later_PrimeIt($input)
     49 => [503, 593],
     59 => [643, 709],
   );
-  $pick = reset($map);
   foreach ($map as $key => $arr) {
-    if ($input > $key) {
-      $pick = $arr;
-    } else {
+    $pick = (object)array("key" => $key, "value" => $arr);
+    if ($input <= $key) {
       break;
     }
   }
-  return $pick;
+  $pick->value = array_map(function ($item) use ($pick) {
+    return $item * $pick->key;
+  }, $pick->value);
+  return $pick->value;
 }
