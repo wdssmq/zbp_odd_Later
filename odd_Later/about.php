@@ -137,9 +137,9 @@
   <p>虽然暂时还没有做区免费 Or 收费的判断，假定您是免费获取到的，而这个插件对您有用，请支付合理费用。</p>
   <p><b>点击上方「关于」可关闭此提示，137 天内不再显示。</b></p>
   <div id="xnxf-qr-box">
-    <img src="https://cdn.jsdelivr.net/gh/wdssmq/wdssmq@main/doc/qr-qq.png" alt="qr-qq" title="qr-qq" style="max-width:100%;">
-    <img src="https://cdn.jsdelivr.net/gh/wdssmq/wdssmq@main/doc/qr-wx.png" alt="qr-wx" title="qr-wx" style="max-width:100%;">
-    <img src="https://cdn.jsdelivr.net/gh/wdssmq/wdssmq@main/doc/qr-ali.png" alt="qr-ali" title="qr-ali" style="max-width:100%;">
+    <img src="https://fastly.jsdelivr.net/gh/wdssmq/wdssmq@main/doc/qr-qq.png" alt="qr-qq" title="qr-qq" style="max-width:100%;">
+    <img src="https://fastly.jsdelivr.net/gh/wdssmq/wdssmq@main/doc/qr-wx.png" alt="qr-wx" title="qr-wx" style="max-width:100%;">
+    <img src="https://fastly.jsdelivr.net/gh/wdssmq/wdssmq@main/doc/qr-ali.png" alt="qr-ali" title="qr-ali" style="max-width:100%;">
   </div>
   <div style="min-height: 37px;"></div>
 </div>
