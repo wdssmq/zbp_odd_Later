@@ -77,7 +77,7 @@ class odd_Later_json
     {
         $tpl = <<<'HTML'
     <li class="json-item">
-        <span>{{uid}}</span>
+        <a href="https://space.bilibili.com/{{uid}}" target="_blank" title="{{name}}">{{uid}}</a>
         <span>{{name}}</span>
         <span>{{type}}</span>
         <a href="{{delUrl}}" title="删除 UID {{uid}}" onclick="return window.confirm('确定删除该项？UID: {{uid}}');">「删除」</a>
