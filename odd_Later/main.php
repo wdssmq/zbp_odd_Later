@@ -30,8 +30,12 @@ if ($act == 'save') {
       $cKey = substr($key, 4 - strlen($key));
       $delItem[$cKey] = $cVal;
     }
-    if (substr($key, 0, 4) === "cfg-" && $cVal !== "") {
+    if (substr($key, 0, 4) === "cfg-") {
       $cKey = substr($key, 4 - strlen($key));
+      // cookie 允许提交空值以便清空，其它配置项空值忽略
+      if ($cVal === "" && $cKey !== "cookie") {
+        continue;
+      }
       if ($cKey == "debug") {
         $cVal = $cVal == "1" ? true : false;
       }
@@ -102,6 +106,11 @@ require $blogpath . 'zb_system/admin/admin_top.php';
         <tr>
           <td>列表</td>
           <td colspan="2" class="ul-style"><?php echo odd_Later_ReadJSONList(); ?></td>
+        </tr>
+        <tr>
+          <td>B 站 Cookie</td>
+          <td><?php echo zbpform::text("cfg-cookie", $zbp->Config("odd_Later")->cookie, "90%"); ?></td>
+          <td>可选。填写<b>自己账号</b>的 Cookie（含 SESSDATA、buvid3 等）可走登录态配额，降低触发风控的概率；留空则为匿名请求，清空后提交即可取消。<input type="submit" value="提交" /></td>
         </tr>
         <tr>
           <td>调试模式</td>

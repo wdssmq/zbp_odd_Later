@@ -16,6 +16,10 @@ function odd_Later_Feed()
   require __DIR__ . "/class/http.php";
   require __DIR__ . "/class/base.php";
   $info = odd_Later_ReadJSON();
+  $cookie = $zbp->Config('odd_Later')->cookie;
+  if (is_string($cookie) && trim($cookie) !== '') {
+    $info["cookie"] = trim($cookie);
+  }
   $objBili = new odd_Later_BiliHTTP($info);
   $objBili->debug = $zbp->Config('odd_Later')->debug;
   $items = $objBili->LoadJSON();
