@@ -113,9 +113,8 @@ require $blogpath . 'zb_system/admin/admin_top.php';
     <h3>
       RSS直链：<?php echo odd_Later_a($url, "当前地址", "点击查看"); ?>
     </h3>
-    <p><a title="订阅到Feedly" target="_blank" href="https://feedly.com/i/subscription/feed%2F<?php echo urlencode($url); ?>">订阅到Feedly</a></p>
-    <p><a title="订阅到Inoreader" target="_blank" href="https://www.inoreader.com/feed/<?php echo urlencode($url); ?>">订阅到Inoreader</a></p>
-    <p><a title="订阅到FeedsPub" target="_blank" href="https://feeds.pub/feed/<?php echo urlencode($url); ?>">订阅到FeedsPub</a></p>
+    <p><a title="订阅到 Feedly" target="_blank" href="https://feedly.com/i/subscription/feed%2F<?php echo urlencode($url); ?>">订阅到 Feedly</a></p>
+    <p><a title="订阅到 Inoreader" target="_blank" href="https://www.inoreader.com/feed/<?php echo urlencode($url); ?>">订阅到 Inoreader</a></p>
     <!-- <h4>－－－－下边是推广链接－－－－</h4> -->
   </div>
 </div>
