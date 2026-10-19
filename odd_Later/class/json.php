@@ -66,12 +66,23 @@ class odd_Later_json
   }
   public function GerFormat()
   {
+    $tpl = <<<HTML
+    <li class="json-item">
+        <span>{{uid}}</span>
+        <span>{{name}}</span>
+        <span>{{type}}</span>
+        <a href="{{delUrl}}" title="删除 UID {{uid}}" onclick="return window.confirm('确定删除该项？UID: {{uid}}');">「删除」</a>
+    </li>
+HTML;
     $rlt = "";
-    foreach ($this->data as $key => $item) {
-      $cLine = implode(" | ", $item);
-      // $cLine = "<li>{$cLine}</li>";
-      $rlt .= "<li>{$cLine}</li>";
+    foreach ($this->GetData() as $item) {
+      $delUrl = BuildSafeURL("main.php?act=del&uid=" . urlencode($item["uid"]));
+      $rlt .= str_replace(
+        array("{{uid}}", "{{name}}", "{{type}}", "{{delUrl}}"),
+        array($item["uid"], $item["name"], $item["type"], $delUrl),
+        $tpl
+      );
     }
-    return "<ul>{$rlt}</ul>";
+    return "<ul class=\"json-list\">{$rlt}</ul>";
   }
 }

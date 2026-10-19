@@ -1,4 +1,7 @@
 <?php
+/** @var array $lang */
+/** @var object $zbp */
+/** @var string $blogpath */
 require '../../../zb_system/function/c_system_base.php';
 
 require '../../../zb_system/function/c_system_admin.php';
@@ -25,17 +28,9 @@ $suc = GetVars('suc', 'GET');
 if ('save' == $act) {
     CheckIsRefererValid();
     $addItem = ['cycle' => odd_Later_json::$defCycle];
-    $delItem = [];
+    $parsed = odd_Later_ParseAddText(isset($_POST['add-text']) ? $_POST['add-text'] : '');
     foreach ($_POST as $key => $val) {
         $cVal = trim($val);
-        if ('add-' === substr($key, 0, 4) && '' !== $cVal) {
-            $cKey = substr($key, 4 - strlen($key));
-            $addItem[$cKey] = $cVal;
-        }
-        if ('del-' === substr($key, 0, 4) && '' !== $cVal) {
-            $cKey = substr($key, 4 - strlen($key));
-            $delItem[$cKey] = $cVal;
-        }
         if ('cfg-' === substr($key, 0, 4) && '' !== $cVal) {
             $cKey = substr($key, 4 - strlen($key));
             if ('debug' == $cKey) {
@@ -45,14 +40,23 @@ if ('save' == $act) {
         }
     }
     $zbp->SaveConfig('odd_Later');
-    if (4 == count($addItem)) {
-        odd_Later_AddItem($addItem);
-    } elseif (3 == count($addItem)) {
-        $zbp->SetHint('tips', '输入不符合');
+    if ('' !== $parsed['error']) {
+        $zbp->SetHint('tips', '输入不符合：' . $parsed['error']);
+    } elseif (null !== $parsed['item']) {
+        odd_Later_AddItem(array_merge($addItem, $parsed['item']));
     } else {
         $zbp->SetHint('good');
     }
     Redirect('./main.php' . (null == $suc ? '' : '?act=$suc'));
+}
+if ('del' == $act) {
+    CheckIsRefererValid();
+    $delUid = trim((string) GetVars('uid', 'GET'));
+    if ('' !== $delUid) {
+        odd_Later_DelItem($delUid);
+    }
+    $zbp->SetHint('good');
+    Redirect('./main.php');
 }
 if ('clear' == $act) {
     CheckIsRefererValid();
@@ -69,6 +73,7 @@ require $blogpath . 'zb_system/admin/admin_header.php';
 
 require $blogpath . 'zb_system/admin/admin_top.php';
 ?>
+<link rel="stylesheet" type="text/css" href="style/style.css">
 <div id="divMain">
   <div class="divHeader"><?php echo $blogtitle; ?> </div>
   <div class="SubMenu">
@@ -76,12 +81,6 @@ require $blogpath . 'zb_system/admin/admin_top.php';
     <a href="<?php echo BuildSafeURL('main.php?act=clear'); ?>" title="删除缓存" onclick="return window.confirm('点击「确定」以继续，或者「取消」。')"><span class="m-right">删除缓存</span></a>
     <?php require_once 'about.php'; ?>
   </div>
-  <style>
-    .ul-style li {
-      float: left;
-      width: 33%;
-    }
-  </style>
   <div id="divMain2">
     <form action="<?php echo BuildSafeURL('main.php?act=save'); ?>" method="post">
       <table width="100%" class="tableBorder">
@@ -93,23 +92,20 @@ require $blogpath . 'zb_system/admin/admin_top.php';
         <tr>
           <td>添加/修改</td>
           <td>
-            <p>UID <?php echo zbpform::text('add-uid', '', '90%'); ?></p>
-            <p>Name <?php echo zbpform::text('add-name', '', '90%'); ?></p>
-            <p>Type <?php echo zbpform::text('add-type', 'up', '90%'); ?></p>
-            <p>所有项目必填</p>
+            <?php echo zbpform::textarea('add-text', '', '90%', '100px', "uid: 123456\nname: 用户名\ntype: up"); ?>
+            <p>严格三行，每行一个「键: 值」</p>
           </td>
-          <td><input type="submit" value="提交" /></td>
-        </tr>
-        <tr>
-          <td>删除</td>
           <td>
-            <p>UID <?php echo zbpform::text('del-uid', '', '90%'); ?></p>
+            示例：
+            <pre>uid: 123456
+name: 用户名
+type: up</pre>
+            <input type="submit" value="提交" />
           </td>
-          <td><input type="submit" value="提交" /></td>
         </tr>
         <tr>
           <td>列表</td>
-          <td colspan="2" class="ul-style"><?php echo odd_Later_ReadJSONList(); ?></td>
+          <td colspan="2"><?php echo odd_Later_ReadJSONList(); ?></td>
         </tr>
         <tr>
           <td>调试模式</td>
