@@ -147,6 +147,7 @@ function odd_Later_PrimeIt($input)
         49 => [503, 593],
         59 => [643, 709],
     ];
+    $pick = (object) ['key' => 0, 'value' => [7, 13]];
     foreach ($map as $key => $arr) {
         $pick = (object) ['key' => $key, 'value' => $arr];
         if ($input <= $key) {
