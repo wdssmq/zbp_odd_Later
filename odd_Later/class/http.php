@@ -180,8 +180,14 @@ class odd_Later_BiliHTTP
             return $cacheValid ? $cachedData : null;
         }
         $http->open('GET', $this->url);
+        if ($http instanceof Network__curl && defined('CURLOPT_HTTP_VERSION') && defined('CURL_HTTP_VERSION_1_1')) {
+            curl_setopt($http->curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        }
         $http->setRequestHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36');
-        $http->setRequestHeader('Referer', 'https://www.bilibili.com/');
+        $http->setRequestHeader('Accept', 'application/json, text/plain, */*');
+        $http->setRequestHeader('Accept-Language', 'zh-CN,zh;q=0.9');
+        $http->setRequestHeader('Origin', 'https://space.bilibili.com');
+        $http->setRequestHeader('Referer', "https://space.bilibili.com/{$this->uid}/");
         $cookie = $this->Cookie();
         if ('' !== $cookie) {
             $http->setRequestHeader('Cookie', $cookie);
@@ -210,10 +216,17 @@ class odd_Later_BiliHTTP
             $statusText = $http->getStatusText();
             $body = preg_replace('/\s+/', ' ', trim($responseText));
             $body = substr($body, 0, 300);
-            $this->Log("抓取失败：HTTP {$status} {$statusText}, API {$code} {$message}; 响应：{$body}");
+            $contentType = $http->getResponseHeader('Content-Type');
+            $biliStatus = $http->getResponseHeader('Bili-Status-Code');
+            $bodyLength = strlen($responseText);
+            $this->Log("抓取失败：HTTP {$status} {$statusText}, API {$code} {$message}; 响应字节：{$bodyLength}; Content-Type：{$contentType}; Bili-Status-Code：{$biliStatus}; 响应：{$body}");
             $this->Log("网址：{$this->url}");
-            if (in_array((int) $code, [-352, -412, -509, -799], true) && '' === $this->Cookie()) {
-                $this->Log('提示：疑似命中风控且未配置 Cookie，可在后台填写自己的 B 站 Cookie（含 SESSDATA/buvid3）。');
+            if (in_array((int) $code, [-352, -412, -509, -799], true)) {
+                if ('' === $cookie) {
+                    $this->Log('提示：疑似命中风控且未配置 Cookie，可在后台填写自己的 B 站 Cookie（含 SESSDATA、buvid3）。');
+                } else {
+                    $this->Log('提示：请求已携带 Cookie 但仍被风控，请从浏览器当前登录会话复制完整 Cookie（含 SESSDATA、buvid3、b_nut），并稍后重试。');
+                }
             }
         }
 
@@ -227,9 +240,10 @@ class odd_Later_BiliHTTP
         if (!is_string($cookie)) {
             return '';
         }
-        // 去掉换行，避免请求头注入；允许直接粘贴整行或 "Cookie: xxx"
-        $cookie = trim(preg_replace('/[\r\n]+/', ' ', $cookie));
-        $cookie = preg_replace('/^cookie\s*:\s*/i', '', $cookie);
+        // 换行 Cookie 按字段分隔拼接，避免把多行字段合并为无效的单个值。
+        $cookie = trim(preg_replace('/[\r\n]+/', '; ', $cookie));
+        $cookie = preg_replace('/(?:^|;\s*)cookie\s*:\s*/i', '', $cookie);
+        $cookie = preg_replace('/\s*;\s*/', '; ', $cookie);
 
         return trim($cookie);
     }
