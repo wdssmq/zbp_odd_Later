@@ -64,6 +64,18 @@ if ('clear' == $act) {
 }
 $t = intval(137 * 24 * 3600) + time();
 $url = "{$zbp->host}feed.php?oddLater";
+$pushUrl = "{$zbp->host}zb_system/cmd.php?act=ajax&src=odd_Later&token=" . odd_Later_Token(137);
+// 以列表中的第一项生成 POST 示例
+$arrCfg = odd_Later_GetCfg()->GetData();
+$demo = array("uid" => "123456", "name" => "用户名", "url" => "https://www.bilibili.com/video/BV1xx411c7mD", "title" => "标题");
+$firstCfg = empty($arrCfg) ? array() : reset($arrCfg);
+if (isset($firstCfg["uid"])) {
+    $demo["uid"] = (string) $firstCfg["uid"];
+}
+if (isset($firstCfg["name"])) {
+    $demo["name"] = (string) $firstCfg["name"];
+}
+$demoJson = json_encode($demo, JSON_UNESCAPED_UNICODE);
 InstallPlugin_odd_Later();
 $blogtitle = '「奇怪插件」稍后查看';
 
@@ -106,6 +118,19 @@ type: up</pre>
           <td colspan="2"><?php echo odd_Later_ReadJSONList(); ?></td>
         </tr>
         <tr>
+          <td>推送地址</td>
+          <td>
+            <input type="text" class="text-input" style="width: 90%;" value="<?php echo htmlspecialchars($pushUrl); ?>" onclick="this.select();" readonly />
+            <p>POST 报文（JSON）：</p>
+            <pre><?php echo htmlspecialchars($demoJson); ?></pre>
+          </td>
+          <td>
+            <p>curl 示例：</p>
+            <pre>curl -X POST "<?php echo htmlspecialchars($pushUrl); ?>" -H "Content-Type: application/json" -d '<?php echo $demoJson; ?>'</pre>
+            <p>uid 须已存在于上方列表，name 须与列表中的名称完全一致，否则拒收；url 重复时按重复推送忽略。</p>
+          </td>
+        </tr>
+        <tr>
           <td>调试模式</td>
           <td><?php zbpform::zbradio('cfg-debug', $zbp->Config('odd_Later')->debug); ?> <?php echo odd_Later_a(odd_Later_Path('log', 'host'), '查看日志', '查看日志'); ?></td>
           <td><input type="submit" value="提交" /></td>
@@ -115,6 +140,7 @@ type: up</pre>
     <h3>
       RSS直链：<?php echo odd_Later_a($url, '当前地址', '点击查看'); ?>
     </h3>
+    <p>按 uid 过滤：<?php echo odd_Later_a($url . '&uid=' . $demo['uid'], 'uid=' . $demo['uid'], '点击查看'); ?></p>
     <p><a title="订阅到 Feedly" target="_blank" href="https://feedly.com/i/subscription/feed%2F<?php echo urlencode($url); ?>">订阅到 Feedly</a></p>
     <p><a title="订阅到 Inoreader" target="_blank" href="https://www.inoreader.com/feed/<?php echo urlencode($url); ?>">订阅到 Inoreader</a></p>
     <!-- <h4>－－－－下边是推广链接－－－－</h4> -->
