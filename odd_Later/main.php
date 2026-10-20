@@ -67,13 +67,13 @@ $url = "{$zbp->host}feed.php?oddLater";
 $pushUrl = "{$zbp->host}zb_system/cmd.php?act=ajax&src=odd_Later&token=" . odd_Later_Token(137);
 // 以列表中的第一项生成 POST 示例
 $arrCfg = odd_Later_GetCfg()->GetData();
-$demo = array("uid" => "123456", "name" => "用户名", "url" => "https://www.bilibili.com/video/BV1xx411c7mD", "title" => "标题");
-$firstCfg = empty($arrCfg) ? array() : reset($arrCfg);
-if (isset($firstCfg["uid"])) {
-    $demo["uid"] = (string) $firstCfg["uid"];
+$demo = ['uid' => '123456', 'name' => '用户名', 'url' => 'https://www.bilibili.com/video/BV1xx411c7mD', 'title' => '标题'];
+$firstCfg = empty($arrCfg) ? [] : reset($arrCfg);
+if (isset($firstCfg['uid'])) {
+    $demo['uid'] = (string) $firstCfg['uid'];
 }
-if (isset($firstCfg["name"])) {
-    $demo["name"] = (string) $firstCfg["name"];
+if (isset($firstCfg['name'])) {
+    $demo['name'] = (string) $firstCfg['name'];
 }
 $demoJson = json_encode($demo, JSON_UNESCAPED_UNICODE);
 InstallPlugin_odd_Later();
