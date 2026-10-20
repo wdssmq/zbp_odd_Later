@@ -83,7 +83,7 @@ require $blogpath . 'zb_system/admin/admin_header.php';
 
 require $blogpath . 'zb_system/admin/admin_top.php';
 ?>
-<link rel="stylesheet" type="text/css" href="style/style.css">
+<link rel="stylesheet" type="text/css" href="style/style.css?v=20261020">
 <div id="divMain">
   <div class="divHeader"><?php echo $blogtitle; ?> </div>
   <div class="SubMenu">
@@ -119,15 +119,16 @@ type: up</pre>
         </tr>
         <tr>
           <td>推送地址</td>
-          <td>
-            <input type="text" class="text-input" style="width: 90%;" value="<?php echo htmlspecialchars($pushUrl); ?>" onclick="this.select();" readonly />
+          <td class="odd-push">
+            <input type="text" class="odd-url-input" value="<?php echo htmlspecialchars($pushUrl); ?>" onclick="this.select();" readonly />
             <p>POST 报文（JSON）：</p>
             <pre><?php echo htmlspecialchars($demoJson); ?></pre>
-          </td>
-          <td>
             <p>curl 示例：</p>
             <pre>curl -X POST "<?php echo htmlspecialchars($pushUrl); ?>" -H "Content-Type: application/json" -d '<?php echo $demoJson; ?>'</pre>
-            <p>uid 须已存在于上方列表，name 须与列表中的名称完全一致，否则拒收；url 重复时按重复推送忽略。</p>
+          </td>
+          <td class="odd-push">
+            <p>uid 须已存在于上方列表，name 须与列表中的名称完全一致，否则拒收。</p>
+            <p>url 与已推送记录重复时，按重复推送忽略（保留最新 100 条）。</p>
           </td>
         </tr>
         <tr>
