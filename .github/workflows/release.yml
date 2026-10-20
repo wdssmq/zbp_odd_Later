@@ -134,6 +134,12 @@ jobs:
           FILE_POST_API: ${{ secrets.FILE_POST_API }}
           ZBA_NAME: ${{ steps.pack.outputs.zba-name }}
         run: |
+          if [[ -z "$FILE_POST_API" ]]; then
+            echo "::notice::未配置 FILE_POST_API，跳过上传到 filepost.dev"
+            echo "file_url=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           curl --fail-with-body -X POST https://upload.filepost.dev/v1/upload \
             -H "X-API-Key: $FILE_POST_API" \
             -F "file=@${ZBA_NAME}" \
