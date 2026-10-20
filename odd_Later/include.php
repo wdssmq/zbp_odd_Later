@@ -5,6 +5,7 @@ function ActivePlugin_odd_Later()
 {
   // Add_Filter_Plugin('Filter_Plugin_Index_Begin', 'odd_Later_test');
   Add_Filter_Plugin('Filter_Plugin_ViewFeed_Begin', 'odd_Later_Feed');
+  Add_Filter_Plugin('Filter_Plugin_Cmd_Ajax', 'odd_Later_Ajax');
 }
 function odd_Later_Feed()
 {
@@ -35,6 +36,46 @@ function odd_Later_Feed()
   echo $rss2->saveXML();
   die();
   return true;
+}
+// 外部推送入口：zb_system/cmd.php?act=ajax&src=odd_Later&token=xxx
+// POST 报文：{"uid": 123, "name": "up主名", "url": "https://...", "title": "标题"}
+function odd_Later_Ajax($src)
+{
+  global $zbp;
+  if ('odd_Later' !== $src) {
+    return;
+  }
+  require_once __DIR__ . "/class/json.php";
+  require_once __DIR__ . "/class/base.php";
+  $token = GetVars("token", "GET");
+  if (!VerifyWebToken($token, "odd_Later")) {
+    odd_Later_InitCache();
+    file_put_contents(odd_Later_Path("cache") . date("Ymd") . "_err.log", date("Y-m-d H:i:s") . " token 无效\n", FILE_APPEND);
+    JsonReturn((object) array("err" => 9, "msg" => "token 无效"));
+  }
+  $rlt = array("err" => 1, "msg" => "请求体为空或不是 JSON");
+  $str = file_get_contents('php://input');
+  $obj = json_decode($str);
+  if (is_object($obj)) {
+    $data = array(
+      "uid" => isset($obj->uid) ? $obj->uid : "",
+      "name" => isset($obj->name) ? $obj->name : "",
+      "url" => isset($obj->url) ? $obj->url : "",
+      "title" => isset($obj->title) ? $obj->title : "",
+    );
+    $rlt = odd_Later_SaveItem($data);
+  }
+  if (0 < $rlt["err"] && $zbp->Config('odd_Later')->debug) {
+    odd_Later_Log($rlt["msg"]);
+  }
+  JsonReturn((object) $rlt);
+}
+// 后台展示用推送 token
+function odd_Later_Token($n = 137)
+{
+  $t = intval($n * 24 * 3600) + time();
+
+  return CreateWebToken('odd_Later', $t);
 }
 function odd_Later_Path($file, $t = 'path')
 {
