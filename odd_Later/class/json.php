@@ -6,6 +6,8 @@ class odd_Later_json
     public $site;
     public $file;
     public static $defCycle = 13;
+    // 单个 uid 保留的条目数上限，及全局去重列表长度
+    public static $defMax = 100;
     protected $data = [];
 
     public function __construct($site, $dirs = [])
@@ -27,6 +29,29 @@ class odd_Later_json
         }
 
         return false;
+    }
+
+    // 按 uid 取一项配置，未命中返回 null
+    public function Get($uid)
+    {
+        foreach ($this->data as $item) {
+            if (isset($item['uid']) && (string) $item['uid'] === (string) $uid) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+    // 按 uid 取配置的 name，未命中返回空字符串
+    public function GetName($uid)
+    {
+        $item = $this->Get($uid);
+        if (null === $item || !isset($item['name'])) {
+            return '';
+        }
+
+        return (string) $item['name'];
     }
 
     public function Del($uid, $doSave = false)

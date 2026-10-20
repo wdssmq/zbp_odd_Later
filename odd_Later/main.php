@@ -6,11 +6,9 @@ require '../../../zb_system/function/c_system_base.php';
 
 require '../../../zb_system/function/c_system_admin.php';
 
-require __DIR__ . '/class/json.php';
+require_once __DIR__ . '/class/json.php';
 
-require __DIR__ . '/class/http.php';
-
-require __DIR__ . '/class/base.php';
+require_once __DIR__ . '/class/base.php';
 $zbp->Load();
 $action = 'root';
 if (!$zbp->CheckRights($action)) {

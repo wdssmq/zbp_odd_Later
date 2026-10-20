@@ -12,27 +12,22 @@ function odd_Later_Feed()
   if (GetVars("oddLater", "GET") === null) {
     return;
   }
-  require __DIR__ . "/class/json.php";
-  require __DIR__ . "/class/http.php";
-  require __DIR__ . "/class/base.php";
-  $info = odd_Later_ReadJSON();
-  $objBili = new odd_Later_BiliHTTP($info);
-  $objBili->debug = $zbp->Config('odd_Later')->debug;
-  $items = $objBili->LoadJSON();
+  require_once __DIR__ . "/class/json.php";
+  require_once __DIR__ . "/class/base.php";
+  // 数据由外部 POST 推送进来后落盘于 cache/bili-usr-{uid}.json
+  $uid = trim((string) GetVars("uid", "GET"));
+  $items = odd_Later_GetItems($uid);
 
   $GLOBALS['hooks']['Filter_Plugin_ViewFeed_Begin']['odd_Later_Feed'] = PLUGIN_EXITSIGNAL_RETURN;
-  $rss2 = new Rss2("[稍后查看][{$info["site"]}]" . $zbp->name, $zbp->host, $zbp->subname);
-  $time = strtotime("today");
+  $rss2 = new Rss2("[稍后查看][bili]" . $zbp->name, $zbp->host, $zbp->subname);
   foreach ($items as $item) {
     $item = (object) $item;
-    $Title = "[{$info["name"]}]{$item->title}";
-    odd_Later_LeanCache($item, $Title);
+    $Title = "[{$item->name}]{$item->title}";
+    // odd_Later_LeanCache($item, $Title);
     $URL = "{$item->url}";
-    $Content = "<p><img src=\"{$item->pic}\" rel=\"noreferrer\" /></p>";
-    $Content .= "<p>Url: {$item->jsonUrl}</p>";
-    // $Content .= join("<br>", (array)$item);
-    // $Time = $item->created;
-    $Time = $time;
+    $Content = "<p><a href=\"{$item->url}\" rel=\"noreferrer\">{$item->title}</a></p>";
+    $Content .= "<p>uid: {$item->uid} / bvid: {$item->bvid}</p>";
+    $Time = 0 < $item->time ? $item->time : time();
     $rss2->addItem($Title, $URL, $Content, $Time);
   }
   header("Content-type:text/xml; Charset=utf-8");
@@ -71,6 +66,9 @@ function odd_Later_Path($file, $t = 'path')
       return $result . $file;
   }
 }
+// LeanCloud 服务将停，已停用；代码保留以备考古或换服务时参考
+// feed 中的调用见 odd_Later_Feed()，同样是注释状态
+/*
 function odd_Later_LeanCache($item, &$title)
 {
   global $zbp;
@@ -99,6 +97,7 @@ function odd_Later_LeanCache($item, &$title)
   }
   return $flag;
 }
+*/
 function InstallPlugin_odd_Later()
 {
   $dir = odd_Later_Path("cache");
