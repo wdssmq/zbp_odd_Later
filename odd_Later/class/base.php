@@ -310,7 +310,7 @@ function odd_Later_ParseBvid($url)
         return strtolower($match[0]);
     }
 
-    return "";
+    return '';
 }
 
 // 去重列表：最新在前，最多 odd_Later_json::$defMax 条
