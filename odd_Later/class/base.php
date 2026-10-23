@@ -234,6 +234,8 @@ function odd_Later_SaveItem($data)
     $title = isset($data['title']) ? trim((string) $data['title']) : '';
     $rlt['uid'] = $uid;
     $rlt['url'] = $url;
+    $bvid = odd_Later_ParseBvid($url);
+    $rlt['bvid'] = $bvid;
 
     if ('' === $uid || !preg_match('/^\d+$/', $uid)) {
         $rlt['err'] = 1;
@@ -274,8 +276,6 @@ function odd_Later_SaveItem($data)
         return $rlt;
     }
 
-    $bvid = odd_Later_ParseBvid($url);
-    $rlt['bvid'] = $bvid;
     odd_Later_InitCache();
     $file = odd_Later_UsrFile($uid);
     $obj = ['name' => $cfgName, 'urls' => []];
@@ -298,7 +298,7 @@ function odd_Later_SaveItem($data)
     return $rlt;
 }
 
-// 从 url 截取 bvid：BV 号 → av 号 → 回退整条 url
+// 从 url 截取 bvid：BV 号 → av 号 → ""
 function odd_Later_ParseBvid($url)
 {
     $url = (string) $url;
@@ -310,7 +310,7 @@ function odd_Later_ParseBvid($url)
         return strtolower($match[0]);
     }
 
-    return $url;
+    return "";
 }
 
 // 去重列表：最新在前，最多 odd_Later_json::$defMax 条

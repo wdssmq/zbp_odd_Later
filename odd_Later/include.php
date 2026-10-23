@@ -58,7 +58,7 @@ function odd_Later_Ajax($src)
     if (!VerifyWebToken($token, 'odd_Later')) {
         odd_Later_InitCache();
         file_put_contents(odd_Later_Path('cache') . date('Ymd') . '_err.log', date('Y-m-d H:i:s') . " token 无效\n", FILE_APPEND);
-        JsonReturn((object) ['err' => 9, 'msg' => 'token 无效']);
+        JsonError(9, 'token 无效', null);
     }
     $rlt = ['err' => 1, 'msg' => '请求体为空或不是 JSON'];
     $str = file_get_contents('php://input');
@@ -75,7 +75,11 @@ function odd_Later_Ajax($src)
     if (0 < $rlt['err'] && $zbp->Config('odd_Later')->debug) {
         odd_Later_Log($rlt['msg']);
     }
-    JsonReturn((object) $rlt);
+    $data = array_diff_key($rlt, ['err' => true, 'msg' => true]);
+    if (0 < $rlt['err']) {
+        JsonError($rlt['err'], $rlt['msg'], (object) $data);
+    }
+    JsonReturn((object) $data);
 }
 // 后台展示用推送 token
 function odd_Later_Token($n = 137)
