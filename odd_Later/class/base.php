@@ -294,6 +294,7 @@ function odd_Later_SaveItem($data)
     $obj['urls'] = array_slice($obj['urls'], 0, odd_Later_json::$defMax);
     file_put_contents($file, json_encode($obj, JSON_UNESCAPED_UNICODE));
     odd_Later_SetLast($url);
+    $rlt['count'] = count($obj['urls']);
 
     return $rlt;
 }
