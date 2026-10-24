@@ -2,6 +2,30 @@
 
 一个收集 B 站视频链接的「奇怪插件」 For Z-BlogPHP
 
+## 使用
+
+因为 B 站的抓取限制，现改为反向提交数据到插件内；
+
+一、需要配合以下「GM_脚本」使用；
+
+GitHub: [点击安装](https://github.com/wdssmq/userscript/blob/main/dist/later-url.user.js?raw=true "点击安装 「水水」收集各种待看链接到远程服务器 - GitHub") 「[在线查看](https://github.com/wdssmq/userscript/blob/main/dist/later-url.user.js "在线查看 dist 源码")」
+
+CDN: [点击安装](https://cdn.jsdelivr.net/gh/wdssmq/userscript@main/dist/later-url.user.js "点击安装 「水水」收集各种待看链接到远程服务器 - CDN") 「[更新缓存](https://purge.jsdelivr.net/gh/wdssmq/userscript@main/dist/later-url.user.js "点击更新 CDN 缓存")」
+
+二、安装并启用「GM_脚本」后，从插件后台获取「推送地址」；
+
+三、进入 `https://space.bilibili.com/<uid>/upload/video` ← 「投稿」标签页内；
+
+ - 点开右下角 `later` 图标面板，打开「ZBP 插件」的开关并填写「第二步」获取到的地址；
+ - 「我的视频」后边有个「复制」按钮，复制用户信息填回插件后台提交；采用白名单机制，仅添加的用户视频会被提交到插件内；
+ - 刷新 B 站页面，期间提示远程请求时选「全部允许」；
+
+## 示例
+
+> [稍后查看][bili]水水的演示站
+>
+> [https://demo.wdssmq.com/feed.php?oddLater](https://demo.wdssmq.com/feed.php?oddLater "[稍后查看][bili]水水的演示站")
+
 ## 投喂支持
 
 爱发电：[https://afdian.com/a/wdssmq](https://afdian.com/a/wdssmq "沉冰浮水正在创作和 z-blog 相关或无关的各种有用或没用的代码 | 爱发电")

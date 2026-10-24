@@ -122,10 +122,6 @@ type: up</pre>
                     <td>推送地址</td>
                     <td class="odd-push">
                         <input type="text" class="odd-url-input" value="<?php echo htmlspecialchars($pushUrl); ?>" onclick="this.select();" readonly />
-                        <p>POST 报文（JSON）：</p>
-                        <pre><?php echo htmlspecialchars($demoJson); ?></pre>
-                        <p>curl 示例：</p>
-                        <pre>curl -X POST "<?php echo htmlspecialchars($pushUrl); ?>" -H "Content-Type: application/json" -d '<?php echo $demoJson; ?>'</pre>
                     </td>
                     <td class="odd-push">
                         <p>uid 须已存在于上方列表，name 须与列表中的名称完全一致，否则拒收。</p>
@@ -145,6 +141,11 @@ type: up</pre>
         <p>按 uid 过滤：<?php echo odd_Later_a($url . '&uid=' . $demo['uid'], 'uid=' . $demo['uid'], '点击查看'); ?></p>
         <p><a title="订阅到 Feedly" target="_blank" href="https://feedly.com/i/subscription/feed%2F<?php echo urlencode($url); ?>">订阅到 Feedly</a></p>
         <p><a title="订阅到 Inoreader" target="_blank" href="https://www.inoreader.com/feed/<?php echo urlencode($url); ?>">订阅到 Inoreader</a></p>
+        <h3>推送示例</h3>
+        <p>POST 报文（JSON）：</p>
+        <pre><?php echo htmlspecialchars($demoJson); ?></pre>
+        <p>curl 示例：</p>
+        <pre>curl -X POST "<?php echo htmlspecialchars($pushUrl); ?>" -H "Content-Type: application/json" -d '<?php echo $demoJson; ?>'</pre>
         <!-- <h4>－－－－下边是推广链接－－－－</h4> -->
     </div>
 </div>
