@@ -1,4 +1,5 @@
 <?php
+
 /** @var array $lang */
 /** @var object $zbp */
 /** @var string $blogpath */
@@ -85,67 +86,67 @@ require $blogpath . 'zb_system/admin/admin_top.php';
 ?>
 <link rel="stylesheet" type="text/css" href="style/style.css?v=20261020">
 <div id="divMain">
-  <div class="divHeader"><?php echo $blogtitle; ?> </div>
-  <div class="SubMenu">
-    <a href="main.php" title="首页"><span class="m-left m-now">首页</span></a>
-    <a href="<?php echo BuildSafeURL('main.php?act=clear'); ?>" title="删除缓存" onclick="return window.confirm('点击「确定」以继续，或者「取消」。')"><span class="m-right">删除缓存</span></a>
-    <?php require_once 'about.php'; ?>
-  </div>
-  <div id="divMain2">
-    <form action="<?php echo BuildSafeURL('main.php?act=save'); ?>" method="post">
-      <table width="100%" class="tableBorder">
-        <tr>
-          <th width="10%">项目</th>
-          <th>内容</th>
-          <th width="45%">说明</th>
-        </tr>
-        <tr>
-          <td>添加/修改</td>
-          <td>
-            <?php echo zbpform::textarea('add-text', '', '90%', '100px', "uid: 123456\nname: 用户名\ntype: up"); ?>
-            <p>严格三行，每行一个「键: 值」</p>
-          </td>
-          <td>
-            示例：
-            <pre>uid: 123456
+    <div class="divHeader"><?php echo $blogtitle; ?> </div>
+    <div class="SubMenu">
+        <a href="main.php" title="首页"><span class="m-left m-now">首页</span></a>
+        <a href="<?php echo BuildSafeURL('main.php?act=clear'); ?>" title="删除缓存" onclick="return window.confirm('点击「确定」以继续，或者「取消」。')"><span class="m-right">删除缓存</span></a>
+        <?php require_once 'about.php'; ?>
+    </div>
+    <div id="divMain2">
+        <form action="<?php echo BuildSafeURL('main.php?act=save'); ?>" method="post">
+            <table width="100%" class="tableBorder">
+                <tr>
+                    <th width="10%">项目</th>
+                    <th>内容</th>
+                    <th width="45%">说明</th>
+                </tr>
+                <tr>
+                    <td>添加/修改</td>
+                    <td>
+                        <?php echo zbpform::textarea('add-text', '', '90%', '100px', "uid: 123456\nname: 用户名\ntype: up"); ?>
+                        <p>严格三行，每行一个「键: 值」</p>
+                    </td>
+                    <td>
+                        示例：
+                        <pre>uid: 123456
 name: 用户名
 type: up</pre>
-            <input type="submit" value="提交" />
-          </td>
-        </tr>
-        <tr>
-          <td>列表</td>
-          <td colspan="2"><?php echo odd_Later_ReadJSONList(); ?></td>
-        </tr>
-        <tr>
-          <td>推送地址</td>
-          <td class="odd-push">
-            <input type="text" class="odd-url-input" value="<?php echo htmlspecialchars($pushUrl); ?>" onclick="this.select();" readonly />
-            <p>POST 报文（JSON）：</p>
-            <pre><?php echo htmlspecialchars($demoJson); ?></pre>
-            <p>curl 示例：</p>
-            <pre>curl -X POST "<?php echo htmlspecialchars($pushUrl); ?>" -H "Content-Type: application/json" -d '<?php echo $demoJson; ?>'</pre>
-          </td>
-          <td class="odd-push">
-            <p>uid 须已存在于上方列表，name 须与列表中的名称完全一致，否则拒收。</p>
-            <p>url 与已推送记录重复时，按重复推送忽略（保留最新 100 条）。</p>
-          </td>
-        </tr>
-        <tr>
-          <td>调试模式</td>
-          <td><?php zbpform::zbradio('cfg-debug', $zbp->Config('odd_Later')->debug); ?> <?php echo odd_Later_a(odd_Later_Path('log', 'host'), '查看日志', '查看日志'); ?></td>
-          <td><input type="submit" value="提交" /></td>
-        </tr>
-      </table>
-    </form>
-    <h3>
-      RSS直链：<?php echo odd_Later_a($url, '当前地址', '点击查看'); ?>
-    </h3>
-    <p>按 uid 过滤：<?php echo odd_Later_a($url . '&uid=' . $demo['uid'], 'uid=' . $demo['uid'], '点击查看'); ?></p>
-    <p><a title="订阅到 Feedly" target="_blank" href="https://feedly.com/i/subscription/feed%2F<?php echo urlencode($url); ?>">订阅到 Feedly</a></p>
-    <p><a title="订阅到 Inoreader" target="_blank" href="https://www.inoreader.com/feed/<?php echo urlencode($url); ?>">订阅到 Inoreader</a></p>
-    <!-- <h4>－－－－下边是推广链接－－－－</h4> -->
-  </div>
+                        <input type="submit" value="提交" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>列表</td>
+                    <td colspan="2"><?php echo odd_Later_ReadJSONList(); ?></td>
+                </tr>
+                <tr>
+                    <td>推送地址</td>
+                    <td class="odd-push">
+                        <input type="text" class="odd-url-input" value="<?php echo htmlspecialchars($pushUrl); ?>" onclick="this.select();" readonly />
+                        <p>POST 报文（JSON）：</p>
+                        <pre><?php echo htmlspecialchars($demoJson); ?></pre>
+                        <p>curl 示例：</p>
+                        <pre>curl -X POST "<?php echo htmlspecialchars($pushUrl); ?>" -H "Content-Type: application/json" -d '<?php echo $demoJson; ?>'</pre>
+                    </td>
+                    <td class="odd-push">
+                        <p>uid 须已存在于上方列表，name 须与列表中的名称完全一致，否则拒收。</p>
+                        <p>url 与已推送记录重复时，按重复推送忽略（保留最新 100 条）。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>调试模式</td>
+                    <td><?php zbpform::zbradio('cfg-debug', $zbp->Config('odd_Later')->debug); ?> <?php echo odd_Later_a(odd_Later_Path('log', 'host'), '查看日志', '查看日志'); ?></td>
+                    <td><input type="submit" value="提交" /></td>
+                </tr>
+            </table>
+        </form>
+        <h3>
+            RSS直链：<?php echo odd_Later_a($url, '当前地址', '点击查看'); ?>
+        </h3>
+        <p>按 uid 过滤：<?php echo odd_Later_a($url . '&uid=' . $demo['uid'], 'uid=' . $demo['uid'], '点击查看'); ?></p>
+        <p><a title="订阅到 Feedly" target="_blank" href="https://feedly.com/i/subscription/feed%2F<?php echo urlencode($url); ?>">订阅到 Feedly</a></p>
+        <p><a title="订阅到 Inoreader" target="_blank" href="https://www.inoreader.com/feed/<?php echo urlencode($url); ?>">订阅到 Inoreader</a></p>
+        <!-- <h4>－－－－下边是推广链接－－－－</h4> -->
+    </div>
 </div>
 
 <?php
