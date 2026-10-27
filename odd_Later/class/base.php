@@ -121,6 +121,32 @@ function odd_Later_ParseAddText($text)
 
     return $rlt;
 }
+// 统一时间格式：时间戳 → Y-m-d H:i:s；0 或非法时返回空字符串
+function odd_Later_TimeFormat($time, $fmt = 'Y-m-d H:i:s')
+{
+    $time = (int) $time;
+    if (0 >= $time) {
+        return '';
+    }
+
+    return date($fmt, $time);
+}
+
+// 解析时间：Y-m-d H:i:s 字符串或时间戳 → 时间戳；失败返回 0
+function odd_Later_ParseTime($str)
+{
+    if (is_numeric($str)) {
+        return (int) $str;
+    }
+    $str = trim((string) $str);
+    if ('' === $str) {
+        return 0;
+    }
+    $time = strtotime($str);
+
+    return false === $time ? 0 : (int) $time;
+}
+
 // 确保缓存目录存在
 function odd_Later_InitCache()
 {
@@ -167,7 +193,7 @@ function odd_Later_GetCfgName($uid)
     return (string) $cfg['name'];
 }
 
-// 读取推送条目，按 time 倒序；$uid 为空时取全部
+// 读取推送条目，按 pubtime 倒序；$uid 为空时取全部
 function odd_Later_GetItems($uid = '')
 {
     $uid = trim((string) $uid);
@@ -207,27 +233,31 @@ function odd_Later_GetItems($uid = '')
                 'url' => $curUrl,
                 'title' => isset($item['title']) ? (string) $item['title'] : '',
                 'bvid' => isset($item['bvid']) ? (string) $item['bvid'] : odd_Later_ParseBvid($curUrl),
+                // 提交时间
                 'time' => isset($item['time']) ? (int) $item['time'] : 0,
+                // 视频发布时间，0 表示未知
+                'pubtime' => isset($item['pubtime']) ? (int) $item['pubtime'] : 0,
             ];
         }
     }
     usort($rlt, function ($a, $b) {
-        if ($a['time'] === $b['time']) {
+        if ($a['pubtime'] === $b['pubtime']) {
             return 0;
         }
 
-        return ($a['time'] > $b['time']) ? -1 : 1;
+        return ($a['pubtime'] > $b['pubtime']) ? -1 : 1;
     });
 
     return $rlt;
 }
 
 // 保存推送条目：uid 匹配 + name 一致 + url 合法 + title 非空 + 去重
-// $data = array("uid" => "", "name" => "", "url" => "", "title" => "")
-// 返回 array("err" => int, "msg" => "", "uid" => "", "url" => "", "bvid" => "")
+// $data = array("uid" => "", "name" => "", "url" => "", "title" => "", "date" => "", "time" => "")
+// date 为视频发布时间、time 为提交时间，均为 Y-m-d H:i:s，可选
+// 返回 array("err" => int, "msg" => "", "uid" => "", "url" => "", "bvid" => "", "pubtime" => int, "time" => int)
 function odd_Later_SaveItem($data)
 {
-    $rlt = ['err' => 0, 'msg' => 'ok', 'uid' => '', 'url' => '', 'bvid' => ''];
+    $rlt = ['err' => 0, 'msg' => 'ok', 'uid' => '', 'url' => '', 'bvid' => '', 'pubtime' => 0, 'time' => 0];
     $uid = isset($data['uid']) ? trim((string) $data['uid']) : '';
     $name = isset($data['name']) ? trim((string) $data['name']) : '';
     $url = isset($data['url']) ? trim((string) $data['url']) : '';
@@ -285,16 +315,26 @@ function odd_Later_SaveItem($data)
             $obj['urls'] = $old['urls'];
         }
     }
+    // 视频发布时间，解析失败记 0
+    $timePub = odd_Later_ParseTime(isset($data['date']) ? $data['date'] : '');
+    // 提交时间，未传或解析失败时取服务端当前时间
+    $timeAdd = odd_Later_ParseTime(isset($data['time']) ? $data['time'] : '');
+    if (0 >= $timeAdd) {
+        $timeAdd = time();
+    }
     array_unshift($obj['urls'], [
         'url' => $url,
         'title' => $title,
         'bvid' => $bvid,
-        'time' => time(),
+        'time' => $timeAdd,
+        'pubtime' => $timePub,
     ]);
     $obj['urls'] = array_slice($obj['urls'], 0, odd_Later_json::$defMax);
     file_put_contents($file, json_encode($obj, JSON_UNESCAPED_UNICODE));
     odd_Later_SetLast($url);
     $rlt['count'] = count($obj['urls']);
+    $rlt['pubtime'] = $timePub;
+    $rlt['time'] = $timeAdd;
 
     return $rlt;
 }

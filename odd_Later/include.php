@@ -31,7 +31,17 @@ function odd_Later_Feed()
         $URL = "{$item->url}";
         $Content = "<p><a href=\"{$item->url}\" rel=\"noreferrer\">{$item->title}</a></p>";
         $Content .= "<p>uid: {$item->uid} / bvid: {$item->bvid}</p>";
-        $Time = 0 < $item->time ? $item->time : time();
+        // 发布时间与提交时间，统一格式 Y-m-d H:i:s
+        $strPub = odd_Later_TimeFormat($item->pubtime);
+        $strAdd = odd_Later_TimeFormat($item->time);
+        if ('' !== $strPub) {
+            $Content .= "<p>发布：{$strPub}</p>";
+        }
+        if ('' !== $strAdd) {
+            $Content .= "<p>提交：{$strAdd}</p>";
+        }
+        // 优先用提交时间作为 RSS 时间
+        $Time = 0 < $item->time ? $item->time : (0 < $item->pubtime ? $item->pubtime : time());
         $rss2->addItem($Title, $URL, $Content, $Time);
     }
     header('Content-type:text/xml; Charset=utf-8');
@@ -43,7 +53,8 @@ function odd_Later_Feed()
     return true;
 }
 // 外部推送入口：zb_system/cmd.php?act=ajax&src=odd_Later&token=xxx
-// POST 报文：{"uid": 123, "name": "up主名", "url": "https://...", "title": "标题"}
+// POST 报文：{"uid": 123, "name": "up主名", "url": "https://...", "title": "标题", "date": "2026-10-01 00:00:00", "time": "2026-10-27 14:03:21"}
+// date：视频发布时间；time：提交时间；两者均为可选，格式 Y-m-d H:i:s
 function odd_Later_Ajax($src)
 {
     global $zbp;
@@ -69,6 +80,10 @@ function odd_Later_Ajax($src)
             'name' => isset($obj->name) ? $obj->name : '',
             'url' => isset($obj->url) ? $obj->url : '',
             'title' => isset($obj->title) ? $obj->title : '',
+            // 视频发布时间，格式 Y-m-d H:i:s
+            'date' => isset($obj->date) ? $obj->date : '',
+            // 提交时间，格式 Y-m-d H:i:s；缺失时取服务端当前时间
+            'time' => isset($obj->time) ? $obj->time : '',
         ];
         $rlt = odd_Later_SaveItem($data);
     }
