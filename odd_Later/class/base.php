@@ -164,6 +164,47 @@ function odd_Later_InitCache()
     return $dir;
 }
 
+// 读取某个 uid 的推送数据
+function odd_Later_GetUserVideos($uid)
+{
+    $file = odd_Later_UsrFile($uid);
+    if (!is_file($file)) {
+        return null;
+    }
+    $content = file_get_contents($file);
+    if (false === $content) {
+        odd_Later_Log("无法读取用户视频缓存：{$file}");
+
+        return null;
+    }
+    $obj = json_decode($content, true);
+    if (!is_array($obj) || !isset($obj['urls']) || !is_array($obj['urls'])) {
+        odd_Later_Log("用户视频缓存格式不合法：{$file}");
+
+        return null;
+    }
+
+    return $obj;
+}
+
+// 更新某个 uid 的推送条目提交时间
+function odd_Later_UpdatePickTime($uid, $url, $pickTime)
+{
+    $obj = odd_Later_GetUserVideos($uid);
+    if (null === $obj) {
+        return false;
+    }
+    foreach ($obj['urls'] as $index => $item) {
+        if (is_array($item) && isset($item['url']) && (string) $item['url'] === $url) {
+            $obj['urls'][$index]['pickTime'] = $pickTime;
+
+            return false !== file_put_contents(odd_Later_UsrFile($uid), json_encode($obj, JSON_UNESCAPED_UNICODE));
+        }
+    }
+
+    return false;
+}
+
 // 某个 uid 的推送文件路径：cache/bili-usr-{uid}.json
 function odd_Later_UsrFile($uid)
 {
@@ -215,16 +256,13 @@ function odd_Later_GetItems($uid = '')
     }
     $rlt = [];
     foreach ($files as $file) {
-        if (!is_file($file)) {
-            continue;
-        }
         $match = [];
         if (!preg_match('/^bili-usr-(.+)\.json$/', basename($file), $match)) {
             continue;
         }
         $curUid = $match[1];
-        $obj = json_decode(file_get_contents($file), true);
-        if (!is_array($obj) || empty($obj['urls']) || !is_array($obj['urls'])) {
+        $obj = odd_Later_GetUserVideos($curUid);
+        if (null === $obj || empty($obj['urls'])) {
             continue;
         }
         $curName = isset($obj['name']) ? (string) $obj['name'] : odd_Later_GetCfgName($curUid);
@@ -325,6 +363,9 @@ function odd_Later_SaveItem($data)
     $pubTime = $parsedPub->getTimestamp();
     $pickTime = $parsedPick->getTimestamp();
     if (in_array($url, odd_Later_GetLast(), true)) {
+        if (1 === random_int(0, 1)) {
+            odd_Later_UpdatePickTime($uid, $url, $pickTime);
+        }
         $rlt['err'] = 6;
         $rlt['msg'] = '重复推送';
 
@@ -334,11 +375,9 @@ function odd_Later_SaveItem($data)
     odd_Later_InitCache();
     $file = odd_Later_UsrFile($uid);
     $obj = ['name' => $cfgName, 'urls' => []];
-    if (is_file($file)) {
-        $old = json_decode(file_get_contents($file), true);
-        if (is_array($old) && isset($old['urls']) && is_array($old['urls'])) {
-            $obj['urls'] = $old['urls'];
-        }
+    $old = odd_Later_GetUserVideos($uid);
+    if (null !== $old) {
+        $obj['urls'] = $old['urls'];
     }
     array_unshift($obj['urls'], [
         'url' => $url,
