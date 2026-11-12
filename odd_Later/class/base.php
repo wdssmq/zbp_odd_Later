@@ -301,13 +301,23 @@ function odd_Later_SaveItem($data)
     }
     $strPubTime = isset($data['pubTime']) ? trim((string) $data['pubTime']) : '';
     $parsedPub = DateTime::createFromFormat('!Y-m-d H:i:s', $strPubTime);
-    if (false === $parsedPub || $parsedPub->format('Y-m-d H:i:s') !== $strPubTime || 0 >= $parsedPub->getTimestamp()) {
+    $strPickTime = isset($data['pickTime']) ? trim((string) $data['pickTime']) : '';
+    $parsedPick = DateTime::createFromFormat('!Y-m-d H:i:s', $strPickTime);
+    if (
+        false === $parsedPub
+        || $parsedPub->format('Y-m-d H:i:s') !== $strPubTime
+        || 0 >= $parsedPub->getTimestamp()
+        || false === $parsedPick
+        || $parsedPick->format('Y-m-d H:i:s') !== $strPickTime
+        || 0 >= $parsedPick->getTimestamp()
+    ) {
         $rlt['err'] = 7;
-        $rlt['msg'] = '视频发布时间缺失或不合法';
+        $rlt['msg'] = '视频发布时间或提交时间缺失或不合法';
 
         return $rlt;
     }
     $pubTime = $parsedPub->getTimestamp();
+    $pickTime = $parsedPick->getTimestamp();
     if (in_array($url, odd_Later_GetLast(), true)) {
         $rlt['err'] = 6;
         $rlt['msg'] = '重复推送';
@@ -323,11 +333,6 @@ function odd_Later_SaveItem($data)
         if (is_array($old) && isset($old['urls']) && is_array($old['urls'])) {
             $obj['urls'] = $old['urls'];
         }
-    }
-    // 提交时间，未传或解析失败时取服务端当前时间
-    $pickTime = odd_Later_ParseTime(isset($data['pickTime']) ? $data['pickTime'] : '');
-    if (0 >= $pickTime) {
-        $pickTime = time();
     }
     array_unshift($obj['urls'], [
         'url' => $url,
